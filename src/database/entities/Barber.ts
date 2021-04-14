@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("users")
-export class User {
+@Entity("barbers")
+export class Barber {
     @PrimaryGeneratedColumn("increment")
     id:number;
 
@@ -22,4 +22,10 @@ export class User {
 
     @Column()
     whatsapp:string;
+
+    @Column({ nullable:true })
+    latitude:string;
+
+    @Column({ nullable:true })
+    longitude:string;
 }

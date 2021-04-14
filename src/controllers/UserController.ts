@@ -45,9 +45,7 @@ export class UserController {
         const usersRepository = getCustomRepository(UsersRepository);
 
         try {
-           const users = await usersRepository.find({
-               where:{isBarber:false}
-           });
+           const users = await usersRepository.find();
            
            users.map(user => {
                user.password = undefined;
