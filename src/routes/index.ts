@@ -15,6 +15,8 @@ router.post('/login', auth.login);
 router.post('/user', usersController.create);
 router.get('/users', usersController.readAll);
 router.get('/user/:id', usersController.readOne);
+router.put('/user/:id', usersController.update);
+router.delete('/user/:id', usersController.delete);
 
 //Barber Routes
 router.post('/barber', barbersController.create);
