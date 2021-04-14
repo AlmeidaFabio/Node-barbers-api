@@ -4,7 +4,7 @@ import { UsersRepository } from "../repositories/UsersRepository";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-export class UserController {
+export class BarberController {
     async create(request:Request, response:Response) {
         const usersRepository = getCustomRepository(UsersRepository);
 
@@ -25,7 +25,8 @@ export class UserController {
                email,
                password:hash,
                address,
-               whatsapp
+               whatsapp,
+               isBarber:true
            });
 
            await usersRepository.save(user);
@@ -46,7 +47,7 @@ export class UserController {
 
         try {
            const users = await usersRepository.find({
-               where:{isBarber:false}
+               where:{isBarber: true}
            });
            
            users.map(user => {
@@ -56,26 +57,6 @@ export class UserController {
 
         } catch (err) {
             return response.status(400).json({ error:err });
-        }
-    }
-
-    async readOne(request:Request, response:Response) {
-        const usersRepository = getCustomRepository(UsersRepository);
-        
-        const id = request.params.id;
-
-        try {
-            if(id) {
-                const user = await usersRepository.findOne(id);
-
-                user.password = undefined;
-
-                return response.json(user);
-            } else {
-                return response.status(400).json({ error: 'This user not exists!' });
-            }
-        } catch (err) {
-            return response.status(400).json({ error: err });
         }
     }
 }
