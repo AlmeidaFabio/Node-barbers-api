@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Favorite } from "./Favorite";
 
 @Entity("users")
 export class User {
@@ -22,4 +23,9 @@ export class User {
 
     @Column()
     whatsapp:string;
+
+    @OneToMany(() => Favorite, favorites => favorites.user, {
+        cascade:true
+    })
+    favorites:Favorite[];
 }

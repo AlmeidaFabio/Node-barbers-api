@@ -45,7 +45,9 @@ export class BarberController {
         const barbersRepository = getCustomRepository(BarbersRepository);
 
         try {
-           const barbers = await barbersRepository.find();
+           const barbers = await barbersRepository.find({
+               relations:["services"]
+           });
            
            barbers.map(barber => {
                barber.password = undefined;

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Service } from "./Service";
 
 @Entity("barbers")
 export class Barber {
@@ -28,4 +29,9 @@ export class Barber {
 
     @Column({ nullable:true })
     longitude:string;
+
+    @OneToMany(() => Service, services => services.barber, {
+        cascade:true
+    })
+    services:Service[];
 }

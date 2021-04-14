@@ -45,7 +45,9 @@ export class UserController {
         const usersRepository = getCustomRepository(UsersRepository);
 
         try {
-           const users = await usersRepository.find();
+           const users = await usersRepository.find({
+               relations:["favorites"]
+           });
            
            users.map(user => {
                user.password = undefined;

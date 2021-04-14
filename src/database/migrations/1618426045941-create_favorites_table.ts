@@ -1,11 +1,11 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class createBarberservicesTable1618416038431 implements MigrationInterface {
+export class createFavoritesTable1618426045941 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name:"services",
+                name:"favorites",
                 columns:[
                     {
                         name:"id",
@@ -15,21 +15,25 @@ export class createBarberservicesTable1618416038431 implements MigrationInterfac
                         generationStrategy:"increment"
                     },
                     {
-                        name:"barber_id",
+                        name:"user_id",
                         type:"int"
                     },
                     {
-                        name:"name",
-                        type:"varchar"
-                    },
-                    {
-                        name:"price",
-                        type:"double"
+                        name:"barber_id",
+                        type:"int"
                     }
                 ],
                 foreignKeys:[
                     {
-                        name:"FKBarber",
+                        name:"FKUser",
+                        referencedTableName:"users",
+                        referencedColumnNames:["id"],
+                        columnNames:["user_id"],
+                        onDelete:"CASCADE",
+                        onUpdate:"CASCADE"
+                    },
+                    {
+                        name:"FKBarbers",
                         referencedTableName:"barbers",
                         referencedColumnNames:["id"],
                         columnNames:["barber_id"],
@@ -42,7 +46,7 @@ export class createBarberservicesTable1618416038431 implements MigrationInterfac
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable("services");
+        await queryRunner.dropTable("favorites");
     }
 
 }
