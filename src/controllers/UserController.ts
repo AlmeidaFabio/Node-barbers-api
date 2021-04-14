@@ -78,4 +78,12 @@ export class UserController {
             return response.status(400).json({ error: err });
         }
     }
+
+    async update(request:Request, response:Response) {
+        const usersRepository = getCustomRepository(UsersRepository);
+
+        const { name, lastname, password, address, whatsapp } = request.body;
+
+        const id = request.params.id;
+    }
 }
