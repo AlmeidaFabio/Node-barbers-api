@@ -46,7 +46,7 @@ export class UserController {
 
         try {
            const users = await usersRepository.find({
-               relations:["favorites"]
+               relations:["favorites", "appointments"]
            });
            
            users.map(user => {
@@ -66,7 +66,9 @@ export class UserController {
 
         try {
             if(id) {
-                const user = await usersRepository.findOne(id);
+                const user = await usersRepository.findOne(id, {
+                    relations:["favorites", "appointments"]
+                });
 
                 user.password = undefined;
 

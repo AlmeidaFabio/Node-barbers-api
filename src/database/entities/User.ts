@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Appointment } from "./Appointment";
 import { Favorite } from "./Favorite";
 
 @Entity("users")
@@ -28,4 +29,9 @@ export class User {
         cascade:true
     })
     favorites:Favorite[];
+
+    @OneToMany(() => Appointment, appointments => appointments.user, {
+        cascade:true
+    })
+    appointments:Appointment[];
 }

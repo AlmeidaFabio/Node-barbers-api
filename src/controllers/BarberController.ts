@@ -41,12 +41,12 @@ export class BarberController {
 
     }
 
-    async readAll(request:Request, response:Response) {
+    async getBarbers(request:Request, response:Response) {
         const barbersRepository = getCustomRepository(BarbersRepository);
 
         try {
            const barbers = await barbersRepository.find({
-               relations:["services"]
+               relations:["services", "availability", "reviews"]
            });
            
            barbers.map(barber => {

@@ -1,4 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Availability } from "./Availability";
+import { Review } from "./Review";
 import { Service } from "./Service";
 
 @Entity("barbers")
@@ -34,4 +36,14 @@ export class Barber {
         cascade:true
     })
     services:Service[];
+
+    @OneToMany(() => Availability, availability => availability.barber, {
+        cascade:true
+    })
+    availability:Availability[];
+
+    @OneToMany(() => Review, reviews => reviews.barber, {
+        cascade:true
+    })
+    reviews:Review[];
 }

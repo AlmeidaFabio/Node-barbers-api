@@ -22,6 +22,6 @@ router.delete('/user/:id', authorized.allowed ,usersController.delete);
 
 //Barber Routes
 router.post('/barber', barbersController.create);
-router.get('/barbers', barbersController.readAll);
+router.get('/barbers', barbersController.getBarbers);
 
 export { router }
