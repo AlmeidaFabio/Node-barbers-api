@@ -3,6 +3,8 @@ import { getCustomRepository } from "typeorm";
 import { UsersRepository } from "../repositories/UsersRepository";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { BarbersRepository } from "../repositories/BarbersRepository";
+import { FavoriteRepository } from "../repositories/FavoriteRepository";
 
 export class UserController {
     async create(request:Request, response:Response) {
@@ -38,7 +40,6 @@ export class UserController {
         } catch (err) {
             return response.status(400).json({ error:err });
         }
-
     }
 
     async readAll(request:Request, response:Response) {
@@ -145,6 +146,74 @@ export class UserController {
                 }
             } else {
                 return response.status(400).json({ error: "you need to be logged in to perform this action!" });
+            }
+        } catch (err) {
+            return response.status(400).json({ error: err });
+        }
+    }
+
+    async toggleFavorite(request:Request, response:Response) {
+        const barbersRepository = getCustomRepository(BarbersRepository);
+        const favoritesRepository = getCustomRepository(FavoriteRepository);
+
+        const { barber_id, token } = request.body;
+
+        try {            
+            const loggedUser = jwt.decode(token);
+            const user = loggedUser['id'];
+            const barber = await barbersRepository.findOne(barber_id);
+
+            if(barber) {
+                const favorite = await favoritesRepository.find({
+                    where:[
+                        {user_id: user.id},
+                        {barber_id: barber_id}
+                    ]
+                });
+
+                if(favorite.length > 0) {
+                    const favoriteId = favorite.map(fav => fav.id)
+
+                    await favoritesRepository.delete(favoriteId);
+
+                    return response.json({favorited:false})
+
+                } else {
+                    const newFavorite = favoritesRepository.create({
+                        user_id:user,
+                        barber_id
+                    });
+
+                    await favoritesRepository.save(newFavorite);
+
+                    return response.json({favorited: true})
+                }
+
+            } else {
+                return response.json({error:'Barber does not exists!'});
+            }
+             
+        } catch (err) {
+            return response.status(400).json({ error: err });
+        }
+    }
+
+    async getFavorites(request:Request, response:Response) {
+        const favoritesRepository = getCustomRepository(FavoriteRepository);
+        const id = request.params.id;
+        const token = request.body.token || request.query.token;
+        const loggedUser = jwt.decode(token);
+        try {
+            if(id === loggedUser['id'].toString()) {
+                const favorites = await favoritesRepository.find({
+                    where:[
+                        {user_id: id}
+                    ],
+                    relations:["barber"]
+                })
+                return response.json(favorites);
+            } else {
+                return response.status(400).json({error: 'Not allowed!'});
             }
         } catch (err) {
             return response.status(400).json({ error: err });

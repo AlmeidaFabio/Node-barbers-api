@@ -3,7 +3,6 @@ import { getCustomRepository } from "typeorm";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { BarbersRepository } from "../repositories/BarbersRepository";
-
 export class BarberController {
     async create(request:Request, response:Response) {
         const barbersRepository = getCustomRepository(BarbersRepository);
@@ -56,6 +55,98 @@ export class BarberController {
 
         } catch (err) {
             return response.status(400).json({ error:err });
+        }
+    }
+
+    async getBarber(request:Request, response:Response) {
+        const barbersRepository = getCustomRepository(BarbersRepository);
+        
+        const id = request.params.id;
+
+        try {
+            if(id) {
+                const barber = await barbersRepository.findOne(id, {
+                    relations:["services", "availability", "reviews"]
+                });
+
+                barber.password = undefined;
+
+                return response.json(barber);
+            } else {
+                return response.status(400).json({ error: 'This barber not exists!' });
+            }
+        } catch (err) {
+            return response.status(400).json({ error: err });
+        }
+    }
+
+    async update(request:Request, response:Response) {
+        const barbersRepository = getCustomRepository(BarbersRepository);
+
+        const { name, lastname, password, address, whatsapp } = request.body;
+
+        const id = request.params.id;
+
+        const token = request.body.token || request.query.token;
+
+        const hash = await bcrypt.hash(password.toString(), 10);
+
+        try {
+            if(token) {
+                const loggedUser = jwt.decode(token);
+
+                if(id) {
+                    if(id === loggedUser['id'].toString()) {
+                        await barbersRepository.update(id, {
+                            name,
+                            lastname,
+                            password:hash,
+                            address,
+                            whatsapp
+                        })
+
+                        return response.json({msg: 'Barber successfully updated!'});
+                    } else {
+                        return response.status(400).json({error:'Unauthorized!'});
+                    }
+                } else {
+                    return response.status(400).json({ error: "Barber not exists!" });
+                }
+            } else {
+                return response.status(400).json({ error: "you need to be logged in to perform this action!" });
+            }
+        } catch (err) {
+            return response.status(400).json({ error: err });
+        }
+    }
+
+    async delete(request:Request, response:Response) {
+        const barbersRepository = getCustomRepository(BarbersRepository);
+
+        const id = request.params.id;
+
+        const token = request.body.token || request.query.token;
+
+        try {
+            if(token) {
+                const loggedUser = jwt.decode(token);
+
+                if(id) {
+                    if(id === loggedUser['id'].toString()) {
+                        await barbersRepository.delete(id);
+
+                        return response.json({msg: 'Barber successfully deleted!'});
+                    } else {
+                        return response.status(400).json({error:'Unauthorized!'});
+                    }
+                } else {
+                    return response.json({error:'Barber does not exists!'});
+                }
+            } else {
+                return response.status(400).json({ error: "you need to be logged in to perform this action!" });
+            }
+        } catch (err) {
+            return response.status(400).json({ error: err });
         }
     }
 }
