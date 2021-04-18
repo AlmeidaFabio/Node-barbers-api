@@ -20,7 +20,7 @@ export class createAvailabilityTable1618511545523 implements MigrationInterface 
                     },
                     {
                         name:"weekday",
-                        type:"int"
+                        type:"timestamp"
                     },
                     {
                         name:"hours",

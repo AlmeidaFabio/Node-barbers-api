@@ -26,59 +26,64 @@ export class AppointmentController {
             const user = loggedUser['id'];
 
             const barber = await barbersRepository.findOne(id);
-            barber.password = undefined;
-
+            
             const service = await servicesRepository.find({
                 where:[
-                    {id: service_id},
-                    {barber_id: barber.id}
+                    {
+                        id: service_id,
+                        barber_id: barber.id
+                    }
                 ]
             });
 
-            if(service) {
+            if(service.length > 0) {
                 const appDate = `${year}-${month}-${day} ${hour}:00:00`;
 
                 if(Date.parse(appDate) > 0) {
                     const appointments = await appointmentsRepository.find({
                         where:[
-                            {barber_id: barber.id},
-                            {ap_datetime: appDate}
+                            {
+                                barber_id: barber.id,
+                                ap_datetime: appDate
+                            }
                         ]
                     });
 
-                    if(appointments) {
-                        const weekday = Date.parse(appDate)
-
-                        const available = await availabilityRepository.find({
+                    if(appointments.length > 0) {
+                        return response.status(400).json({error: 'Date unavailable'})
+                        
+                    } else {
+                        const availables = await availabilityRepository.find({
                             where:[
-                                {barber_id: barber.id},
-                                {weekday: weekday}
+                                {
+                                    barber_id: barber['id'],
+                                    weekday: appDate
+                                }
+                                
                             ]
                         })
 
-                        if(available) {
-                            const hours = available.map(avail => avail.hours.split(','));
-
-                            if(!hours.includes(hour)) {
-                                const newAppointment = appointmentsRepository.create({
-                                    user_id: user,
-                                    barber_id: barber.id,
-                                    service_id,
-                                    ap_datetime:appDate
-                                })
-
-                                await appointmentsRepository.save(newAppointment);
-
-                                return response.status(201).json(newAppointment);
-                            } else {
-                                return response.status(400).json({ error: 'Hour unavailable' });
-                            }
+                        if(availables.length > 0) {
+                            availables.map(avail => {
+                                if(avail.hours.includes(hour)) {
+                                    const newAppointment = appointmentsRepository.create({
+                                        user_id: user,
+                                        barber_id: barber.id,
+                                        service_id,
+                                        ap_datetime:appDate
+                                    });
+    
+                                    appointmentsRepository.save(newAppointment);
+    
+                                    return response.status(201).json(newAppointment);
+                                } else {
+                                    return response.status(400).json({error: "hour unavailable"})
+                                }
+                            })
+                            
                         } else {
                             return response.status(400).json({ error: 'Barber unavailable' });
                         }
-                        
-                    } else {
-                        return response.status(400).json({ error: 'Date unavailable' });
                     }
 
                 } else {
