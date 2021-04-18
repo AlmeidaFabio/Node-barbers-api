@@ -3,6 +3,7 @@ import { AppointmentController } from "../controllers/AppointmentController";
 import { AuthController } from "../controllers/AuthController";
 import { AvailabilityControler } from "../controllers/AvailabilityController";
 import { BarberController } from "../controllers/BarberController";
+import { ReviewsController } from "../controllers/ReviewsController";
 import { ServiceController } from "../controllers/ServiceController";
 import { UserController } from "../controllers/UserController";
 import { Allow } from "../middlewares/Allow";
@@ -12,6 +13,7 @@ const barbersController = new BarberController();
 const servicesController = new ServiceController();
 const appointmentsController = new AppointmentController();
 const availabilityController = new AvailabilityControler();
+const reviewsController = new ReviewsController();
 const auth = new AuthController();
 const authorized = new Allow();
 
@@ -46,5 +48,9 @@ router.get('/user/:id/appointments/', authorized.allowed, appointmentsController
 
 //Barber Availabilities
 router.post('/barber/availability', authorized.allowed, availabilityController.setAvailable);
+
+//Barber Reviews
+router.post('/barber/:id/review', authorized.allowed, reviewsController.setReview);
+router.get('/barber/:id/reviews', reviewsController.getBarberReviews);
 
 export { router }
