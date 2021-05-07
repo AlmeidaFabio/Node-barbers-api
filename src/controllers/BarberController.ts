@@ -45,7 +45,7 @@ export class BarberController {
 
         try {
            const barbers = await barbersRepository.find({
-               relations:["services", "availability", "reviews"]
+               relations:["services", "availability", "reviews", "photos"]
            });
            
            barbers.map(barber => {
@@ -66,7 +66,7 @@ export class BarberController {
         try {
             if(id) {
                 const barber = await barbersRepository.findOne(id, {
-                    relations:["services", "availability", "reviews"]
+                    relations:["services", "availability", "reviews", "photos"]
                 });
 
                 barber.password = undefined;

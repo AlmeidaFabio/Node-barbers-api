@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Availability } from "./Availability";
+import { Photo } from "./Photo";
 import { Review } from "./Review";
 import { Service } from "./Service";
 
@@ -46,4 +47,9 @@ export class Barber {
         cascade:true
     })
     reviews:Review[];
+
+    @OneToMany(() => Photo, photos => photos.barber, {
+        cascade:true
+    })
+    photos:Photo[];
 }
