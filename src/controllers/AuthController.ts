@@ -19,7 +19,7 @@ export class AuthController {
                 return response.status(400).json({error: 'Invalid password'});
             }
 
-            const token = jwt.sign({id:user.id}, process.env.Secret, {
+            const token = jwt.sign({id:user.id}, process.env.SECRET, {
                 expiresIn:86400
             })
 
@@ -46,7 +46,7 @@ export class AuthController {
                 return response.status(400).json({error: 'Invalid password'});
             }
 
-            const token = jwt.sign({id:barber.id}, process.env.Secret, {
+            const token = jwt.sign({id:barber.id}, process.env.SECRET, {
                 expiresIn:86400
             })
 

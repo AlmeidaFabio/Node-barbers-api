@@ -37,7 +37,7 @@ export class BarberController {
 
            const barber = await barberService.createBarber(data, cover);
 
-           const token = jwt.sign({ id:barber.id }, process.env.Secret, { expiresIn:864000 });
+           const token = jwt.sign({ id:barber.id }, process.env.SECRET, { expiresIn:864000 });
 
            barber.password = undefined;
 

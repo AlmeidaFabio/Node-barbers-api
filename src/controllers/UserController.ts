@@ -37,7 +37,7 @@ export class UserController {
             } else {
                 const user = await usersService.createUser(data, cover);
 
-                const token = jwt.sign({ id:user.id }, process.env.Secret, { expiresIn:864000 });
+                const token = jwt.sign({ id:user.id }, process.env.SECRET, { expiresIn:864000 });
 
                 user.password = undefined;
 
