@@ -15,7 +15,7 @@ export class AuthController {
                 return response.status(400).json({error: 'User not found'});
             }
 
-            if(!await bcrypt.compare(password.toString(), user.password)) {
+            if(!await bcrypt.compare(password.toString(), user['password'])) {
                 return response.status(400).json({error: 'Invalid password'});
             }
 
@@ -38,11 +38,11 @@ export class AuthController {
         try {
             const barber = await barberService.getBarberByEmail(email);
 
-            if(!barber) {
+            if( !barber ) {
                 return response.status(400).json({error: 'Barber not found'});
             }
 
-            if(!await bcrypt.compare(password.toString(), barber.password)) {
+            if(!await bcrypt.compare(password.toString(), barber['password'])) {
                 return response.status(400).json({error: 'Invalid password'});
             }
 

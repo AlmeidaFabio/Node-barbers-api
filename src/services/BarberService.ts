@@ -31,11 +31,15 @@ export class BarberService {
 
     async getBarberByEmail(email:string) {
         try {
-            const barber = await this.barbersRepository.findOne(email, {
+            const barber = await this.barbersRepository.findOne({
+                where:[{
+                    email
+                }],
                 select:["id", "email", "password"]
             });
 
             return barber;
+
         } catch (err) {
             return err;
         }

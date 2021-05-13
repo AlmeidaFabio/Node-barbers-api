@@ -5,12 +5,14 @@ import { AuthController } from "../controllers/AuthController";
 import { AvailabilityControler } from "../controllers/AvailabilityController";
 import { BarberController } from "../controllers/BarberController";
 import { FavoritesController } from "../controllers/FavotitesController";
+import { PhotosController } from "../controllers/PhotosController";
 import { ReviewsController } from "../controllers/ReviewsController";
 import { SearchController } from "../controllers/SearchController";
 import { ServiceController } from "../controllers/ServiceController";
 import { UserController } from "../controllers/UserController";
 import { Allow } from "../middlewares/Allow";
 import CoverUpload from "../middlewares/CoverUpload";
+import PhotosUpload from "../middlewares/PhotosUpload";
 
 const usersController = new UserController();
 const barbersController = new BarberController();
@@ -19,6 +21,7 @@ const appointmentsController = new AppointmentController();
 const availabilityController = new AvailabilityControler();
 const reviewsController = new ReviewsController();
 const favoritesController = new FavoritesController();
+const photosController = new PhotosController();
 const searchController = new SearchController();
 const auth = new AuthController();
 const authorized = new Allow();
@@ -56,6 +59,10 @@ router.post('/barber/availability', authorized.allowed, availabilityController.s
 
 //Barber Reviews
 router.post('/barber/:id/review', authorized.allowed, reviewsController.setReview);
+
+
+//Barber Photos
+router.post('/barber/upload/photos', authorized.allowed, multer(PhotosUpload).single("photo"),  photosController.uploadPhotos);
 
 //Search
 router.get('/search', searchController.search);
