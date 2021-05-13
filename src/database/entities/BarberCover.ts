@@ -1,15 +1,15 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Barber } from "./Barber";
 
-@Entity("barberphotos")
-export class Photo {
+@Entity("barbercovers")
+export class BarberCover {
     @PrimaryGeneratedColumn("increment")
     id:number;
 
     @Column()
     barber_id:number;
 
-    @ManyToOne(() => Barber, barber => barber.photos)
+    @OneToOne(() => Barber, barber => barber.cover)
     @JoinColumn({name:"barber_id"})
     barber:Barber;
 
@@ -27,7 +27,7 @@ export class Photo {
 
     constructor () {
         if(!this.url) {
-            this.url = `${process.env.BaseUrl}/uploads/photos/${this.key}`
+            this.url = `${process.env.BaseUrl}/uploads/covers/${this.key}`
         }
     }
 }

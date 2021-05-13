@@ -1,12 +1,12 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
 import 'reflect-metadata';
 import express, { json, urlencoded } from 'express';
 import cors from 'cors';
 import path from 'path';
-import createConnection from './database';
+import './database';
 import { router } from './routes';
 
-createConnection();
+dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, '..', 'public')));

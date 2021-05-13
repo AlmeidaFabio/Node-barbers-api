@@ -1,6 +1,7 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Appointment } from "./Appointment";
 import { Favorite } from "./Favorite";
+import { UserCover } from "./UserCover";
 
 @Entity("users")
 export class User {
@@ -34,4 +35,9 @@ export class User {
         cascade:true
     })
     appointments:Appointment[];
+
+    @OneToOne(() => UserCover, cover => cover.user, {
+        cascade:true
+    })
+    cover:UserCover;
 }

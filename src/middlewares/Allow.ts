@@ -4,18 +4,15 @@ import jwt from 'jsonwebtoken';
 export class Allow {
     async allowed(request:Request, response:Response, next:NextFunction) {
         try {
-            if(!request.query.token && !request.body.token) {
+            if(!request.headers.authorization) {
                 response.json({notallowed:true})
                 return;
             }
     
             let token = '';
     
-            if(request.query.token) {
-                token = request.query.token.toString();
-            }
-            if(request.body.token) {
-                token = request.body.token;
+            if(request.headers.authorization) {
+                token = request.headers.authorization;
             }
             if(token == '') {
                 response.json({notallowed:true})

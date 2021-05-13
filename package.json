@@ -5,6 +5,8 @@
   "author": "AlmeidaFabio",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
     "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/index.ts",
     "typeorm": "ts-node-dev node_modules/typeorm/cli.js"
   },
@@ -15,6 +17,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "multer": "^1.4.2",
     "multer-azure-blob-storage": "^1.0.2",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",

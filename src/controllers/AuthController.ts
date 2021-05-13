@@ -1,20 +1,16 @@
 import { Request, Response } from "express";
-import { getCustomRepository } from "typeorm";
-import { UsersRepository } from "../repositories/UsersRepository";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { BarbersRepository } from "../repositories/BarbersRepository";
+import { UserService } from "../services/UserService";
+import { BarberService } from "../services/BarberService";
 
 export class AuthController {
     async login(request:Request, response:Response) {
-        const usersRepository = getCustomRepository(UsersRepository);
+        const usersService = new UserService();
         const { email, password } = request.body;
 
         try {
-            const user = await usersRepository.findOne({email}, {
-                select:["id", "email", "password"]
-            });
-
+            const user = await usersService.getUserByEmail(email);
             if(!user) {
                 return response.status(400).json({error: 'User not found'});
             }
@@ -35,13 +31,12 @@ export class AuthController {
     }
 
     async barberLogin(request:Request, response:Response) {
-        const barbersRepository = getCustomRepository(BarbersRepository);
+        const barberService = new BarberService();
+
         const { email, password } = request.body;
 
         try {
-            const barber = await barbersRepository.findOne({email}, {
-                select:["id", "email", "password"]
-            });
+            const barber = await barberService.getBarberByEmail(email);
 
             if(!barber) {
                 return response.status(400).json({error: 'Barber not found'});

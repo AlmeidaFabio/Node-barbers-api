@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Availability } from "./Availability";
+import { BarberCover } from "./BarberCover";
 import { Photo } from "./Photo";
 import { Review } from "./Review";
 import { Service } from "./Service";
@@ -52,4 +53,9 @@ export class Barber {
         cascade:true
     })
     photos:Photo[];
+
+    @OneToOne(() => BarberCover, cover => cover.barber, {
+        cascade:true
+    })
+    cover:BarberCover;
 }

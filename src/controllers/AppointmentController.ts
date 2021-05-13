@@ -1,20 +1,21 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { AppointmensRepository } from "../repositories/AppointmentsRepository";
 import { AvailabilityRepository } from "../repositories/AvailabilityRepository";
-import { BarbersRepository } from "../repositories/BarbersRepository";
-import { ServicesRepository } from "../repositories/ServiceRepository";
 import jwt from 'jsonwebtoken';
+import { AppointmentService } from "../services/AppointmentService";
+import { BarberService } from "../services/BarberService";
+import { ServicesService } from "../services/ServicesService";
 
 export class AppointmentController {
     async setAppointment(request:Request, response:Response) {
-        const barbersRepository = getCustomRepository(BarbersRepository);
-        const servicesRepository = getCustomRepository(ServicesRepository);
-        const appointmentsRepository = getCustomRepository(AppointmensRepository);
+        const barberService = new BarberService();
+        const serviceServices = new ServicesService();
+        const appointmentsService = new AppointmentService();
+
         const availabilityRepository = getCustomRepository(AvailabilityRepository);
         const id = request.params.id;
         const { service_id, year, month, day, hour } = request.body;
-        const token = request.body.token || request.query.token;
+        const token = request.headers.authorization;
 
         (month < 10) ? '0' + month : month;
         (day < 10) ? '0' + day : day;
@@ -23,31 +24,15 @@ export class AppointmentController {
         try {
             const loggedUser = jwt.decode(token);
 
-            const user = loggedUser['id'];
-
-            const barber = await barbersRepository.findOne(id);
+            const barber = await barberService.getBarberById(id);
             
-            const service = await servicesRepository.find({
-                where:[
-                    {
-                        id: service_id,
-                        barber_id: barber.id
-                    }
-                ]
-            });
+            const service = await serviceServices.getServiceByBarber(service_id, barber['id']);
 
             if(service.length > 0) {
                 const appDate = `${year}-${month}-${day} ${hour}:00:00`;
 
                 if(Date.parse(appDate) > 0) {
-                    const appointments = await appointmentsRepository.find({
-                        where:[
-                            {
-                                barber_id: barber.id,
-                                ap_datetime: appDate
-                            }
-                        ]
-                    });
+                    const appointments = await appointmentsService.getAppointmentsByBarberId(barber['id'], appDate);
 
                     if(appointments.length > 0) {
                         return response.status(400).json({error: 'Date unavailable'})
@@ -66,14 +51,7 @@ export class AppointmentController {
                         if(availables.length > 0) {
                             availables.map(avail => {
                                 if(avail.hours.includes(hour)) {
-                                    const newAppointment = appointmentsRepository.create({
-                                        user_id: user,
-                                        barber_id: barber.id,
-                                        service_id,
-                                        ap_datetime:appDate
-                                    });
-    
-                                    appointmentsRepository.save(newAppointment);
+                                    const newAppointment = appointmentsService.setAppointment(loggedUser['id'], barber['id'], service_id, appDate);
     
                                     return response.status(201).json(newAppointment);
                                 } else {
@@ -92,33 +70,6 @@ export class AppointmentController {
             } else {
                 return response.status(400).json({ error: 'Service not exists!' });
             }
-        } catch (err) {
-            return response.status(400).json({ error: err });
-        }
-    }
-
-    async getAppointments(request:Request, response:Response) {
-        const appointmentsRepository = getCustomRepository(AppointmensRepository);
-        const id = request.params.id;
-        const token = request.body.token || request.query.token;
-
-        const loggedUser = jwt.decode(token);
-
-        try {
-            if(id === loggedUser['id'].toString()) {
-                const appointments = await appointmentsRepository.find({
-                    where:[
-                        {user_id: id}
-                    ],
-                    order:{ap_datetime:"DESC"},
-                    relations:["barber", "barber.services"]
-                })
-    
-                return response.json(appointments);
-            } else {
-                return response.status(400).json({error: 'Not allowed!'})
-            }
-            
         } catch (err) {
             return response.status(400).json({ error: err });
         }

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { getCustomRepository } from "typeorm";
-import { AvailabilityRepository } from "../repositories/AvailabilityRepository";
 import jwt from 'jsonwebtoken';
+import { AvailbilityService } from "../services/AvailabilityService";
 
 export class AvailabilityControler {
     async setAvailable(request:Request, response:Response) {
-        const availsRepository = getCustomRepository(AvailabilityRepository);
-        const token = request.body.token || request.query.token;
+        const availabilityService = new AvailbilityService();
+
+        const token = request.headers.authorization;
 
         const { year, month, day, hour } = request.body;
 
@@ -21,26 +21,12 @@ export class AvailabilityControler {
 
             const hours = `${hour}:00:00`
 
-            const availability = await availsRepository.find({
-                where:[
-                    {
-                        barber_id: loggedBarber['id'],
-                        weekday: availDate,
-                        hours: hours
-                    }
-                ]
-            })
+            const availability = await availabilityService.getBarberAvailbilities(loggedBarber['id'], availDate, hours)
 
             if(availability.length > 0) {
                 return response.status(400).json({error: 'Date unavailable'})
             } else {
-                const avail = availsRepository.create({
-                    barber_id: loggedBarber['id'],
-                    weekday: availDate,
-                    hours
-                })
-
-                await availsRepository.save(avail)
+                const avail = await availabilityService.setAvailability(loggedBarber['id'], availDate, hours);
 
                 return response.status(201).json(avail)
             }
