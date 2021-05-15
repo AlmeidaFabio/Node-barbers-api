@@ -1,18 +1,17 @@
 import { Request, Response } from "express";
-import { getCustomRepository } from "typeorm";
-import { AvailabilityRepository } from "../repositories/AvailabilityRepository";
 import jwt from 'jsonwebtoken';
 import { AppointmentService } from "../services/AppointmentService";
 import { BarberService } from "../services/BarberService";
 import { ServicesService } from "../services/ServicesService";
+import { AvailbilityService } from "../services/AvailabilityService";
 
 export class AppointmentController {
     async setAppointment(request:Request, response:Response) {
         const barberService = new BarberService();
         const serviceServices = new ServicesService();
         const appointmentsService = new AppointmentService();
+        const availabilityService = new AvailbilityService();
 
-        const availabilityRepository = getCustomRepository(AvailabilityRepository);
         const id = request.params.id;
         const { service_id, year, month, day, hour } = request.body;
         const token = request.headers.authorization;
@@ -38,15 +37,7 @@ export class AppointmentController {
                         return response.status(400).json({error: 'Date unavailable'})
                         
                     } else {
-                        const availables = await availabilityRepository.find({
-                            where:[
-                                {
-                                    barber_id: barber['id'],
-                                    weekday: appDate
-                                }
-                                
-                            ]
-                        })
+                        const availables = await availabilityService.getAvailabilityByBarberAndWeedDay(barber['id'], appDate);
 
                         if(availables.length > 0) {
                             availables.map(avail => {

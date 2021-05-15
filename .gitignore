@@ -4,5 +4,8 @@ node_modules
 
 .env
 
+public/images/covers/*
+!public/images/covers/.gitkeep
+
 public/uploads/photos/*
 !public/uploads/photos/.gitkeep

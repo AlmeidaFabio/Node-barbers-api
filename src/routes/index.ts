@@ -56,6 +56,7 @@ router.post('/barber/:id/appointment', authorized.allowed, appointmentsControlle
 
 //Barber Availabilities
 router.post('/barber/availability', authorized.allowed, availabilityController.setAvailable);
+router.get('/barber/:id/availabilities', availabilityController.listBarberAvailabilities);
 
 //Barber Reviews
 router.post('/barber/:id/review', authorized.allowed, reviewsController.setReview);

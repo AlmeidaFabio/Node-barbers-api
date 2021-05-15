@@ -21,7 +21,7 @@ export class AvailabilityControler {
 
             const hours = `${hour}:00:00`
 
-            const availability = await availabilityService.getBarberAvailbilities(loggedBarber['id'], availDate, hours)
+            const availability = await availabilityService.getBarberAvailbilitieByDateAndHour(loggedBarber['id'], availDate, hours)
 
             if(availability.length > 0) {
                 return response.status(400).json({error: 'Date unavailable'})
@@ -30,6 +30,20 @@ export class AvailabilityControler {
 
                 return response.status(201).json(avail)
             }
+        } catch (err) {
+            return response.status(400).json({error:err});
+        }
+    }
+
+    async listBarberAvailabilities(request: Request, response:Response) {
+        const availabilityService = new AvailbilityService();
+        const barber_id = request.params.id;
+
+        try {
+            const availabilities = await availabilityService.getBarberAvailabilities(barber_id);
+
+            return response.status(200).json(availabilities);
+            
         } catch (err) {
             return response.status(400).json({error:err});
         }
